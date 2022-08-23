@@ -1,0 +1,77 @@
+  * Query 1 *
+Total Sales for Employees
+
+SELECT
+  Employee.FirstName,
+  Employee.LastName,
+  SUM(invoice.total) AS total_salse
+FROM Customer
+JOIN Employee
+  ON Customer.SupportRepId = Employee.EmployeeId
+JOIN Invoice
+  ON Customer.CustomerId = Invoice.CustomerId
+
+GROUP BY 1,
+         2
+ORDER BY 3 DESC;
+
+
+ * Query 2 *
+Total Sales for each country
+
+SELECT
+  Customer.Country,
+  SUM(invoice.total) AS total_salse
+FROM Customer
+JOIN Invoice
+  ON Customer.CustomerId = Invoice.CustomerId
+GROUP BY 1
+ORDER BY 2 DESC;
+
+
+* Query 3 *
+Total Sales for each Artist
+
+SELECT
+  Artist.Name,
+  (SUM(invoice.total) * Track.UnitPrice) AS total_salse
+FROM Invoice
+JOIN InvoiceLine
+  ON InvoiceLine.InvoiceId = Invoice.InvoiceId
+JOIN Track
+  ON Track.TrackId = InvoiceLine.TrackId
+JOIN Album
+  ON Track.AlbumId = Album.ArtistId
+JOIN Artist
+  ON Artist.ArtistId = Album.ArtistId
+GROUP BY 1
+ORDER BY 2 DESC;
+
+
+
+* Query 4 *
+Best selling artist in each country
+
+SELECT
+  t1.name,
+  t1.Country,
+  MAX(t1.total_salse) "total salse"
+FROM (SELECT
+  Artist.Name,
+  Customer.Country,
+  (SUM(invoice.total) * Track.UnitPrice) AS total_salse
+FROM Invoice
+JOIN InvoiceLine
+  ON InvoiceLine.InvoiceId = Invoice.InvoiceId
+JOIN Customer
+  ON Customer.CustomerId = Invoice.CustomerId
+JOIN Track
+  ON Track.TrackId = InvoiceLine.TrackId
+JOIN Album
+  ON Track.AlbumId = Album.ArtistId
+JOIN Artist
+  ON Artist.ArtistId = Album.ArtistId
+GROUP BY 1,
+         2) t1
+GROUP BY 2
+ORDER BY 3 DESC
